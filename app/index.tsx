@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 
-// Redirect to login so the app opens on the sign-in screen
+// Opens on the starter (home) screen
 export default function Index() {
-  return <Redirect href="/login" />;
+  return <Redirect href="/(tabs)" />;
 }
