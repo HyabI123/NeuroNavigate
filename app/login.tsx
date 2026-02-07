@@ -1,4 +1,5 @@
 import * as Google from 'expo-auth-session/providers/google';
+import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -12,6 +13,7 @@ const GOOGLE_WEB_CLIENT_ID = (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? ''
 const hasClientId = GOOGLE_WEB_CLIENT_ID.length > 0;
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: GOOGLE_WEB_CLIENT_ID || 'placeholder',
     iosClientId: GOOGLE_WEB_CLIENT_ID || 'placeholder',
@@ -22,12 +24,9 @@ export default function LoginScreen() {
   useEffect(() => {
     if (response?.type === 'success') {
       console.log('logged in');
-      const { authentication } = response;
-      if (authentication?.accessToken) {
-        // Optional: use accessToken for API calls or user info
-      }
+      router.replace('/language-select' as import('expo-router').Href);
     }
-  }, [response]);
+  }, [response, router]);
 
   const handlePress = () => {
     promptAsync();
