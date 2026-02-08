@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { LanguageProvider } from '@/contexts/language-context';
+import { ProfilesProvider } from '@/contexts/profiles-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const unstable_settings = {
@@ -14,11 +16,34 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
+      <LanguageProvider>
+        <ProfilesProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ title: 'Sign in' }} />
+            <Stack.Screen name="language-select" options={{ title: 'Select language' }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+            <Stack.Screen name="permissions" options={{ headerShown: false }} />
+            <Stack.Screen name="add_child_profile" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="add_profile_form"
+              options={{ title: 'Add Child Profile' }}
+            />
+            <Stack.Screen
+              name="select_profile"
+              options={{
+                title: 'Select Child Profile',
+                headerBackTitle: 'Back',
+              }}
+            />
+            <Stack.Screen
+              name="sensory_preferences"
+              options={{ title: 'Sensory Preferences' }}
+            />
+          </Stack>
+        </ProfilesProvider>
+      </LanguageProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
