@@ -20,20 +20,24 @@ export default function PermissionsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Allow location to find restaurants near you</Text>
-
-      <View style={styles.pinWrapper}>
-        <Ionicons name="location" size={80} color="#2563eb" />
+      <View style={styles.topSection}>
+        <View style={styles.iconWrapper}>
+          <Ionicons name="location" size={80} color="#2563eb" />
+        </View>
+        <Text style={styles.heading}>Location Access</Text>
+        <Text style={styles.description}>
+          We use your location to find nearby sensory-friendly places and restaurants that work for your family.
+        </Text>
       </View>
 
       <Pressable
         style={({ pressed }) => [styles.allowButton, pressed && styles.allowButtonPressed]}
         onPress={handleAllowAccess}
       >
-        <Text style={styles.allowButtonText}>Allow access</Text>
+        <Text style={styles.allowButtonText}>Allow</Text>
       </Pressable>
 
-      {showTryAgain && <Text style={styles.tryAgain}>Try again</Text>}
+      {showTryAgain && <Text style={styles.tryAgain}>Please go to your settings and enable location access.</Text>}
     </View>
   );
 }
@@ -41,35 +45,47 @@ export default function PermissionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     paddingHorizontal: 24,
     paddingTop: 48,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topSection: {
+    marginBottom: 80,
+    alignItems: 'center',
+  },
+  iconWrapper: {
+    marginBottom: 24,
   },
   heading: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: 'black',
     textAlign: 'center',
-    marginBottom: 40,
-    paddingHorizontal: 8,
   },
-  pinWrapper: {
-    marginBottom: 32,
+  description: {
+    marginTop: 16,
+    fontSize: 15,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 16,
   },
   allowButton: {
     backgroundColor: '#2563eb',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 180,
   },
   allowButtonPressed: {
     opacity: 0.9,
   },
   allowButtonText: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '600',
     color: '#fff',
   },
@@ -78,5 +94,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#dc2626',
     fontWeight: '500',
+    textAlign: 'center',
+    paddingHorizontal: 24,
+    alignSelf: 'center',
   },
 });
