@@ -12,7 +12,7 @@ export default function PermissionsScreen() {
     setShowTryAgain(false);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status === 'granted') {
-      router.replace('/Add_child_profile' as import('expo-router').Href);
+      router.replace('/add_child_profile' as import('expo-router').Href);
     } else {
       setShowTryAgain(true);
     }
