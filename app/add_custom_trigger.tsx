@@ -9,7 +9,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSensory } from '@/contexts/sensory-context';
 
@@ -24,7 +23,6 @@ const COMMON_EXAMPLES = [
 
 export default function AddCustomTriggerScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { addCustomTrigger } = useSensory();
   const [customText, setCustomText] = useState('');
   const [selectedExample, setSelectedExample] = useState<string | null>(null);
@@ -37,25 +35,10 @@ export default function AddCustomTriggerScreen() {
     }
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
-
   const canAdd = customText.trim().length > 0 || selectedExample !== null;
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          onPress={handleCancel}
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Create Child Profile</Text>
-      </View>
-
+    <View style={styles.screen}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -119,7 +102,7 @@ export default function AddCustomTriggerScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.cancelButton, pressed && styles.cancelButtonPressed]}
-          onPress={handleCancel}
+          onPress={() => router.back()}
         >
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </Pressable>
@@ -132,27 +115,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingTop: 12,
-    paddingBottom: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e5e7eb',
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 4,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
   },
   scroll: {
     flex: 1,

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Pressable,
@@ -9,7 +9,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 
 const SUGGESTED_SAFE_FOODS = ['Pasta', 'Chicken nuggets', 'Rice'];
 const SUGGESTED_AVERSIONS = ['Mushrooms', 'Spicy foods'];
@@ -23,6 +22,8 @@ const DIETARY_RESTRICTIONS = [
 
 export default function FoodPreferencesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const [safeFoods, setSafeFoods] = useState<string[]>([]);
   const [safeFoodInput, setSafeFoodInput] = useState('');
   const [aversions, setAversions] = useState<string[]>([]);
@@ -69,18 +70,6 @@ export default function FoodPreferencesScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar hidden />
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          onPress={() => router.back()}
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Create Child Profile</Text>
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -176,7 +165,13 @@ export default function FoodPreferencesScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => router.push('/predictability_routine')}
+          onPress={() => {
+            if (profileId) {
+              router.push({ pathname: '/communication_language', params: { id: profileId } } as import('expo-router').Href);
+            } else {
+              router.push('/communication_language' as import('expo-router').Href);
+            }
+          }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>
@@ -189,26 +184,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingTop: 12,
-    paddingBottom: 8,
-    backgroundColor: '#f5f5f5',
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 4,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
   },
   scroll: {
     flex: 1,

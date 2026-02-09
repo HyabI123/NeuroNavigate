@@ -59,17 +59,18 @@ export default function CommunicationLanguageScreen() {
   }, [profile?.id]);
 
   const handleNext = () => {
-    if (!profileId) return;
-    updateProfileCommunication(profileId, {
-      communicationMethod: communicationMethod ?? undefined,
-      primaryLanguage: primaryLanguage || undefined,
-      secondaryLanguage: secondaryLanguage || undefined,
-      communicationNotes: communicationNotes.trim() || undefined,
-    });
-    router.back();
+    if (profileId && profile) {
+      updateProfileCommunication(profileId, {
+        communicationMethod: communicationMethod ?? undefined,
+        primaryLanguage: primaryLanguage || undefined,
+        secondaryLanguage: secondaryLanguage || undefined,
+        communicationNotes: communicationNotes.trim() || undefined,
+      });
+    }
+    router.push('/predictability_routine' as import('expo-router').Href);
   };
 
-  if (!profileId || !profile) {
+  if (profileId && !profile) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Profile not found.</Text>

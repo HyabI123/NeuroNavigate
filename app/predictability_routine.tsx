@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import {
   Pressable,
   ScrollView,
@@ -8,7 +9,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 
 const WAIT_TIME_OPTIONS = ['0-5 minutes', '5-15 minutes', '15-30 minutes'] as const;
 const SEATING_OPTIONS = ['Booth', 'Corner', 'Outdoor', 'Away from kitchen'] as const;
@@ -32,18 +32,6 @@ export default function PredictabilityRoutineScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar hidden />
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          onPress={() => router.back()}
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Create Child Profile</Text>
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -108,18 +96,16 @@ function RoutineSlider({
   value: SliderLevel;
   onChange: (v: SliderLevel) => void;
 }) {
+  const handleTrackPress = (e: { nativeEvent: { locationX: number } }, trackWidth: number) => {
+    const x = e.nativeEvent.locationX;
+    const segment = trackWidth <= 0 ? 1 : Math.floor((x / trackWidth) * 3);
+    const level = Math.max(0, Math.min(2, segment)) as SliderLevel;
+    onChange(level);
+  };
+
   return (
     <View style={styles.sliderRow}>
-      <View style={styles.sliderTrack}>
-        <View
-          style={[
-            styles.sliderThumb,
-            value === 0 && styles.sliderThumbLow,
-            value === 1 && styles.sliderThumbMed,
-            value === 2 && styles.sliderThumbHigh,
-          ]}
-        />
-      </View>
+      <RoutineSliderTrack value={value} onTrackPress={handleTrackPress} />
       <View style={styles.sliderLabels}>
         {(['Low', 'Med', 'High'] as const).map((label, i) => (
           <Pressable
@@ -142,30 +128,37 @@ function RoutineSlider({
   );
 }
 
+function RoutineSliderTrack({
+  value,
+  onTrackPress,
+}: {
+  value: SliderLevel;
+  onTrackPress: (e: { nativeEvent: { locationX: number } }, trackWidth: number) => void;
+}) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const onLayout = (e: LayoutChangeEvent) => setTrackWidth(e.nativeEvent.layout.width);
+  return (
+    <Pressable
+      onLayout={onLayout}
+      onPress={(e) => onTrackPress(e as unknown as { nativeEvent: { locationX: number } }, trackWidth)}
+      style={styles.sliderTrack}
+    >
+      <View
+        style={[
+          styles.sliderThumb,
+          value === 0 && styles.sliderThumbLow,
+          value === 1 && styles.sliderThumbMed,
+          value === 2 && styles.sliderThumbHigh,
+        ]}
+      />
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingTop: 12,
-    paddingBottom: 8,
-    backgroundColor: '#f5f5f5',
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 4,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
   },
   scroll: {
     flex: 1,

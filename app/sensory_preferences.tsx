@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  type LayoutChangeEvent,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 
 import { useSensory } from '@/contexts/sensory-context';
 
@@ -23,6 +23,8 @@ type SensitivityLevel = 0 | 1 | 2; // Low, Med, High
 
 export default function SensoryPreferencesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const { customTriggerNames } = useSensory();
   const [noiseLevel, setNoiseLevel] = useState<SensitivityLevel>(1);
   const [lightingLevel, setLightingLevel] = useState<SensitivityLevel>(1);
@@ -41,18 +43,6 @@ export default function SensoryPreferencesScreen() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar hidden />
-      <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          onPress={() => router.back()}
-          hitSlop={12}
-        >
-          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Create Child Profile</Text>
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -94,7 +84,13 @@ export default function SensoryPreferencesScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => router.push('/food_preferences' as import('expo-router').Href)}
+          onPress={() => {
+            if (profileId) {
+              router.push({ pathname: '/food_preferences', params: { id: profileId } } as import('expo-router').Href);
+            } else {
+              router.push('/food_preferences' as import('expo-router').Href);
+            }
+          }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>
@@ -110,18 +106,16 @@ function SensitivitySlider({
   value: SensitivityLevel;
   onChange: (v: SensitivityLevel) => void;
 }) {
+  const handleTrackPress = (e: { nativeEvent: { locationX: number } }, trackWidth: number) => {
+    const x = e.nativeEvent.locationX;
+    const segment = trackWidth <= 0 ? 1 : Math.floor((x / trackWidth) * 3);
+    const level = Math.max(0, Math.min(2, segment)) as SensitivityLevel;
+    onChange(level);
+  };
+
   return (
     <View style={styles.sliderRow}>
-      <View style={styles.sliderTrack}>
-        <View
-          style={[
-            styles.sliderThumb,
-            value === 0 && styles.sliderThumbLow,
-            value === 1 && styles.sliderThumbMed,
-            value === 2 && styles.sliderThumbHigh,
-          ]}
-        />
-      </View>
+      <SliderTrack value={value} onTrackPress={handleTrackPress} />
       <View style={styles.sliderLabels}>
         {(['Low', 'Med', 'High'] as const).map((label, i) => (
           <Pressable
@@ -144,31 +138,37 @@ function SensitivitySlider({
   );
 }
 
+function SliderTrack({
+  value,
+  onTrackPress,
+}: {
+  value: SensitivityLevel;
+  onTrackPress: (e: { nativeEvent: { locationX: number } }, trackWidth: number) => void;
+}) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const onLayout = (e: LayoutChangeEvent) => setTrackWidth(e.nativeEvent.layout.width);
+  return (
+    <Pressable
+      onLayout={onLayout}
+      onPress={(e) => onTrackPress(e as unknown as { nativeEvent: { locationX: number } }, trackWidth)}
+      style={styles.sliderTrack}
+    >
+      <View
+        style={[
+          styles.sliderThumb,
+          value === 0 && styles.sliderThumbLow,
+          value === 1 && styles.sliderThumbMed,
+          value === 2 && styles.sliderThumbHigh,
+        ]}
+      />
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingTop: 12,
-    paddingBottom: 8,
-    backgroundColor: '#f5f5f5',
-    borderBottomWidth: 0,
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 4,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a1a1a',
   },
   scroll: {
     flex: 1,

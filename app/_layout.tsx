@@ -41,19 +41,19 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="sensory_preferences"
-              options={{ headerShown: false }}
+              options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
             <Stack.Screen
               name="add_custom_trigger"
-              options={{ headerShown: false }}
+              options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
             <Stack.Screen
               name="food_preferences"
-              options={{ headerShown: false }}
+              options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
             <Stack.Screen
               name="predictability_routine"
-              options={{ headerShown: false }}
+              options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
             <Stack.Screen
               name="communication_language"
