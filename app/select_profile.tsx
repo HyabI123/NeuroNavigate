@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -7,7 +7,11 @@ import { useProfiles } from '@/contexts/profiles-context';
 
 export default function SelectProfileScreen() {
   const router = useRouter();
-  const { profiles } = useProfiles();
+  const params = useLocalSearchParams<{ from?: string | string[] }>();
+  const fromParam = typeof params.from === 'string' ? params.from : params.from?.[0];
+  const isSwitchFlow = fromParam === 'switch';
+
+  const { profiles, setCurrentProfileId } = useProfiles();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleProfile = (id: string) => {
@@ -24,6 +28,11 @@ export default function SelectProfileScreen() {
   const handleContinue = () => {
     if (!hasSelection) return;
     const firstSelectedId = Array.from(selectedIds)[0];
+    if (isSwitchFlow) {
+      setCurrentProfileId(firstSelectedId);
+      router.replace('/(tabs)' as import('expo-router').Href);
+      return;
+    }
     router.push({
       pathname: '/sensory_preferences',
       params: { id: firstSelectedId },

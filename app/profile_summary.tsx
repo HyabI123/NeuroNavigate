@@ -83,7 +83,7 @@ export default function ProfileSummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
-  const { profiles } = useProfiles();
+  const { profiles, setCurrentProfileId } = useProfiles();
   const profile = profileId ? profiles.find((p) => p.id === profileId) : null;
 
   if (!profileId || !profile) {
@@ -95,7 +95,8 @@ export default function ProfileSummaryScreen() {
   }
 
   const handleSaveProfile = () => {
-    router.replace('/select_profile');
+    setCurrentProfileId(profileId);
+    router.replace('/(tabs)' as import('expo-router').Href);
   };
 
   const editRoutes: { path: string; params?: { id: string } }[] = [

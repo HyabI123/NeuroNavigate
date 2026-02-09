@@ -37,6 +37,8 @@ export type ChildProfile = {
 
 type ProfilesContextType = {
   profiles: ChildProfile[];
+  currentProfileId: string | null;
+  setCurrentProfileId: (id: string | null) => void;
   addProfile: (name: string, age: string) => string;
   updateProfile: (id: string, name: string, age: string) => void;
   updateProfileCommunication: (
@@ -58,6 +60,7 @@ const ProfilesContext = createContext<ProfilesContextType | null>(null);
 
 export function ProfilesProvider({ children }: { children: React.ReactNode }) {
   const [profiles, setProfiles] = useState<ChildProfile[]>([]);
+  const [currentProfileId, setCurrentProfileId] = useState<string | null>(null);
 
   const addProfile = (name: string, age: string) => {
     const id = Date.now().toString();
@@ -108,6 +111,8 @@ export function ProfilesProvider({ children }: { children: React.ReactNode }) {
     <ProfilesContext.Provider
       value={{
         profiles,
+        currentProfileId,
+        setCurrentProfileId,
         addProfile,
         updateProfile,
         updateProfileCommunication,
