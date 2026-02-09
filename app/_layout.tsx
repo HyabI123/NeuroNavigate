@@ -47,6 +47,14 @@ export default function RootLayout() {
             name="add_custom_trigger"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="food_preferences"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="predictability_routine"
+            options={{ headerShown: false }}
+          />
         </Stack>
         </SensoryProvider>
         </ProfilesProvider>

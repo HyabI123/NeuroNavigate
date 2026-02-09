@@ -10,33 +10,24 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-import { useSensory } from '@/contexts/sensory-context';
+const WAIT_TIME_OPTIONS = ['0-5 minutes', '5-15 minutes', '15-30 minutes'] as const;
+const SEATING_OPTIONS = ['Booth', 'Corner', 'Outdoor', 'Away from kitchen'] as const;
 
-const SENSORY_TRIGGERS = [
-  'Crowds',
-  'Strong smells',
-  'Bright lights',
-  'Sudden noises',
-] as const;
+type SliderLevel = 0 | 1 | 2; // Low, Med, High
 
-type SensitivityLevel = 0 | 1 | 2; // Low, Med, High
-
-export default function SensoryPreferencesScreen() {
+export default function PredictabilityRoutineScreen() {
   const router = useRouter();
-  const { customTriggerNames } = useSensory();
-  const [noiseLevel, setNoiseLevel] = useState<SensitivityLevel>(1);
-  const [lightingLevel, setLightingLevel] = useState<SensitivityLevel>(1);
-  const [triggers, setTriggers] = useState<Record<string, boolean>>({
-    Crowds: false,
-    'Strong smells': false,
-    'Bright lights': false,
-    'Sudden noises': false,
+  const [routineLevel, setRoutineLevel] = useState<SliderLevel>(1);
+  const [waitTime, setWaitTime] = useState<string | null>(null);
+  const [seating, setSeating] = useState<Record<string, boolean>>({
+    Booth: false,
+    Corner: false,
+    Outdoor: false,
+    'Away from kitchen': false,
   });
 
-  const allTriggerKeys = [...SENSORY_TRIGGERS, ...customTriggerNames];
-
-  const toggleTrigger = (key: string) => {
-    setTriggers((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleSeating = (key: string) => {
+    setSeating((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -58,43 +49,50 @@ export default function SensoryPreferencesScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.stepLabel}>Step 2: Sensory Preferences</Text>
+        <Text style={styles.stepLabel}>Step 5: Predictability & Routine</Text>
 
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Noise Sensitivity</Text>
-          <SensitivitySlider value={noiseLevel} onChange={setNoiseLevel} />
-          <Text style={styles.cardLabel}>Lighting Sensitivity</Text>
-          <SensitivitySlider value={lightingLevel} onChange={setLightingLevel} />
+          <Text style={styles.sectionTitle}>Routine Reliance</Text>
+          <RoutineSlider value={routineLevel} onChange={setRoutineLevel} />
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Sensory Triggers</Text>
-          {allTriggerKeys.map((label) => (
+          <Text style={styles.sectionTitle}>Wait Time Tolerance</Text>
+          {WAIT_TIME_OPTIONS.map((option) => (
             <Pressable
-              key={label}
-              style={styles.triggerRow}
-              onPress={() => toggleTrigger(label)}
+              key={option}
+              style={styles.radioRow}
+              onPress={() => setWaitTime(option)}
             >
-              <View style={[styles.checkbox, triggers[label] && styles.checkboxChecked]}>
-                {triggers[label] && (
+              <View style={[styles.radioOuter, waitTime === option && styles.radioOuterSelected]}>
+                <View style={[styles.radioInner, waitTime === option && styles.radioInnerSelected]} />
+              </View>
+              <Text style={styles.radioLabel}>{option}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Seating Preferences</Text>
+          {SEATING_OPTIONS.map((key) => (
+            <Pressable
+              key={key}
+              style={styles.checkRow}
+              onPress={() => toggleSeating(key)}
+            >
+              <View style={[styles.checkbox, seating[key] && styles.checkboxChecked]}>
+                {seating[key] && (
                   <Ionicons name="checkmark" size={16} color="#fff" />
                 )}
               </View>
-              <Text style={styles.triggerLabel}>{label}</Text>
+              <Text style={styles.checkLabel}>{key}</Text>
             </Pressable>
           ))}
         </View>
 
         <Pressable
-          style={({ pressed }) => [styles.addTriggerButton, pressed && styles.addTriggerPressed]}
-          onPress={() => router.push('/add_custom_trigger')}
-        >
-          <Text style={styles.addTriggerText}>+ Add custom trigger</Text>
-        </Pressable>
-
-        <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => router.push('/food_preferences')}
+          onPress={() => router.push('/select_profile')}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>
@@ -103,12 +101,12 @@ export default function SensoryPreferencesScreen() {
   );
 }
 
-function SensitivitySlider({
+function RoutineSlider({
   value,
   onChange,
 }: {
-  value: SensitivityLevel;
-  onChange: (v: SensitivityLevel) => void;
+  value: SliderLevel;
+  onChange: (v: SliderLevel) => void;
 }) {
   return (
     <View style={styles.sliderRow}>
@@ -127,7 +125,7 @@ function SensitivitySlider({
           <Pressable
             key={label}
             style={styles.sliderLabelTouch}
-            onPress={() => onChange(i as SensitivityLevel)}
+            onPress={() => onChange(i as SliderLevel)}
           >
             <Text
               style={[
@@ -156,7 +154,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 8,
     backgroundColor: '#f5f5f5',
-    borderBottomWidth: 0,
   },
   backButton: {
     padding: 4,
@@ -189,12 +186,6 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 16,
   },
-  cardLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1a1a1a',
-    marginBottom: 10,
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
@@ -202,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sliderRow: {
-    marginBottom: 24,
+    marginBottom: 8,
   },
   sliderTrack: {
     height: 6,
@@ -246,7 +237,39 @@ const styles = StyleSheet.create({
     color: '#2563eb',
     fontWeight: '600',
   },
-  triggerRow: {
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#9ca3af',
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  radioOuterSelected: {
+    borderColor: '#2563eb',
+  },
+  radioInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'transparent',
+  },
+  radioInnerSelected: {
+    backgroundColor: '#2563eb',
+  },
+  radioLabel: {
+    fontSize: 16,
+    color: '#1a1a1a',
+  },
+  checkRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
@@ -265,33 +288,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563eb',
     borderColor: '#2563eb',
   },
-  triggerLabel: {
+  checkLabel: {
     fontSize: 16,
     color: '#1a1a1a',
-  },
-  addTriggerButton: {
-    alignSelf: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#9ca3af',
-    backgroundColor: '#fff',
-    marginBottom: 20,
-  },
-  addTriggerPressed: {
-    opacity: 0.8,
-  },
-  addTriggerText: {
-    fontSize: 15,
-    color: '#1a1a1a',
-    fontWeight: '500',
   },
   nextButton: {
     backgroundColor: '#2563eb',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
+    marginTop: 8,
   },
   nextButtonPressed: {
     opacity: 0.9,
