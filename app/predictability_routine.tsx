@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -10,6 +10,9 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
+import type { SensitivityLevel } from '@/contexts/profiles-context';
+import { useProfiles } from '@/contexts/profiles-context';
+
 const WAIT_TIME_OPTIONS = ['0-5 minutes', '5-15 minutes', '15-30 minutes'] as const;
 const SEATING_OPTIONS = ['Booth', 'Corner', 'Outdoor', 'Away from kitchen'] as const;
 
@@ -17,6 +20,11 @@ type SliderLevel = 0 | 1 | 2; // Low, Med, High
 
 export default function PredictabilityRoutineScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
+  const { profiles, updateProfileRoutine } = useProfiles();
+  const profile = profileId ? profiles.find((p) => p.id === profileId) : null;
+
   const [routineLevel, setRoutineLevel] = useState<SliderLevel>(1);
   const [waitTime, setWaitTime] = useState<string | null>(null);
   const [seating, setSeating] = useState<Record<string, boolean>>({
@@ -26,8 +34,40 @@ export default function PredictabilityRoutineScreen() {
     'Away from kitchen': false,
   });
 
+  useEffect(() => {
+    if (profile?.routine) {
+      const r = profile.routine;
+      if (r.routineLevel !== undefined) setRoutineLevel(r.routineLevel as SliderLevel);
+      if (r.waitTime !== undefined) setWaitTime(r.waitTime);
+      if (r.seating?.length) {
+        setSeating((prev) => {
+          const next = { ...prev };
+          r.seating!.forEach((k) => {
+            if (k in next) next[k] = true;
+          });
+          return next;
+        });
+      }
+    }
+  }, [profile?.id]);
+
   const toggleSeating = (key: string) => {
     setSeating((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleNext = () => {
+    if (profileId) {
+      updateProfileRoutine(profileId, {
+        routineLevel,
+        waitTime,
+        seating: SEATING_OPTIONS.filter((k) => seating[k]),
+      });
+    }
+    router.push(
+      profileId
+        ? { pathname: '/profile_summary', params: { id: profileId } }
+        : '/profile_summary'
+    );
   };
 
   return (
@@ -92,7 +132,7 @@ export default function PredictabilityRoutineScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => router.push('/select_profile')}
+          onPress={handleNext}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>

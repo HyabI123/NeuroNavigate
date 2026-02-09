@@ -59,14 +59,19 @@ export default function CommunicationLanguageScreen() {
   }, [profile?.id]);
 
   const handleNext = () => {
-    if (!profileId) return;
-    updateProfileCommunication(profileId, {
-      communicationMethod: communicationMethod ?? undefined,
-      primaryLanguage: primaryLanguage || undefined,
-      secondaryLanguage: secondaryLanguage || undefined,
-      communicationNotes: communicationNotes.trim() || undefined,
-    });
-    router.back();
+    if (profileId && profile) {
+      updateProfileCommunication(profileId, {
+        communicationMethod: communicationMethod ?? undefined,
+        primaryLanguage: primaryLanguage || undefined,
+        secondaryLanguage: secondaryLanguage || undefined,
+        communicationNotes: communicationNotes.trim() || undefined,
+      });
+    }
+    router.push(
+      profileId
+        ? { pathname: '/predictability_routine', params: { id: profileId } }
+        : '/predictability_routine'
+    );
   };
 
   if (!profileId || !profile) {

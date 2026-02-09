@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+
+import { useProfiles } from '@/contexts/profiles-context';
 
 const SUGGESTED_SAFE_FOODS = ['Pasta', 'Chicken nuggets', 'Rice'];
 const SUGGESTED_AVERSIONS = ['Mushrooms', 'Spicy foods'];
@@ -21,19 +23,45 @@ const DIETARY_RESTRICTIONS = [
   'Dairy-Free',
 ] as const;
 
+const DEFAULT_DIETARY: Record<string, boolean> = {
+  Vegetarian: false,
+  Halal: false,
+  'Gluten-Free': false,
+  'Nut-Free': false,
+  'Dairy-Free': false,
+};
+
 export default function FoodPreferencesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
+  const { profiles, updateProfileFood } = useProfiles();
+  const profile = profileId ? profiles.find((p) => p.id === profileId) : null;
+
   const [safeFoods, setSafeFoods] = useState<string[]>([]);
   const [safeFoodInput, setSafeFoodInput] = useState('');
   const [aversions, setAversions] = useState<string[]>([]);
   const [aversionInput, setAversionInput] = useState('');
   const [dietary, setDietary] = useState<Record<string, boolean>>({
-    Vegetarian: false,
-    Halal: false,
-    'Gluten-Free': false,
-    'Nut-Free': false,
-    'Dairy-Free': false,
+    ...DEFAULT_DIETARY,
   });
+
+  useEffect(() => {
+    if (profile?.food) {
+      const f = profile.food;
+      if (f.safeFoods?.length) setSafeFoods(f.safeFoods);
+      if (f.aversions?.length) setAversions(f.aversions);
+      if (f.dietary?.length) {
+        setDietary((prev) => {
+          const next = { ...DEFAULT_DIETARY };
+          f.dietary!.forEach((k) => {
+            if (k in next) next[k] = true;
+          });
+          return next;
+        });
+      }
+    }
+  }, [profile?.id]);
 
   const toggleSafeFood = (item: string) => {
     setSafeFoods((prev) =>
@@ -65,6 +93,23 @@ export default function FoodPreferencesScreen() {
 
   const toggleDietary = (key: string) => {
     setDietary((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleNext = () => {
+    if (profileId) {
+      updateProfileFood(profileId, {
+        safeFoods,
+        aversions,
+        dietary: Object.entries(dietary)
+          .filter(([, v]) => v)
+          .map(([k]) => k),
+      });
+    }
+    router.push(
+      profileId
+        ? { pathname: '/communication_language', params: { id: profileId } }
+        : '/communication_language'
+    );
   };
 
   return (
@@ -176,7 +221,7 @@ export default function FoodPreferencesScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => router.push('/predictability_routine')}
+          onPress={handleNext}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>

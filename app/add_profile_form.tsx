@@ -36,10 +36,14 @@ export default function AddProfileFormScreen() {
     if (!trimmedName || !trimmedAge) return;
     if (isEditing && id) {
       updateProfile(id, trimmedName, trimmedAge);
+      router.back();
     } else {
-      addProfile(trimmedName, trimmedAge);
+      const newId = addProfile(trimmedName, trimmedAge);
+      router.replace({
+        pathname: '/sensory_preferences',
+        params: { id: newId },
+      } as import('expo-router').Href);
     }
-    router.back();
   };
 
   const canSave = name.trim().length > 0 && age.trim().length > 0;
