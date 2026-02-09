@@ -1,15 +1,31 @@
 import React, { createContext, useContext, useState } from 'react';
 
+export type CommunicationMethod = 'verbal' | 'semi-verbal' | 'nonverbal';
+
 export type ChildProfile = {
   id: string;
   name: string;
   age: string;
+  communicationMethod?: CommunicationMethod;
+  primaryLanguage?: string;
+  secondaryLanguage?: string;
+  communicationNotes?: string;
 };
 
 type ProfilesContextType = {
   profiles: ChildProfile[];
   addProfile: (name: string, age: string) => void;
   updateProfile: (id: string, name: string, age: string) => void;
+  updateProfileCommunication: (
+    id: string,
+    data: Pick<
+      ChildProfile,
+      | 'communicationMethod'
+      | 'primaryLanguage'
+      | 'secondaryLanguage'
+      | 'communicationNotes'
+    >
+  ) => void;
 };
 
 const ProfilesContext = createContext<ProfilesContextType | null>(null);
@@ -30,8 +46,25 @@ export function ProfilesProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const updateProfileCommunication = (
+    id: string,
+    data: Pick<
+      ChildProfile,
+      | 'communicationMethod'
+      | 'primaryLanguage'
+      | 'secondaryLanguage'
+      | 'communicationNotes'
+    >
+  ) => {
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...data } : p))
+    );
+  };
+
   return (
-    <ProfilesContext.Provider value={{ profiles, addProfile, updateProfile }}>
+    <ProfilesContext.Provider
+      value={{ profiles, addProfile, updateProfile, updateProfileCommunication }}
+    >
       {children}
     </ProfilesContext.Provider>
   );

@@ -1,9 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-// Starter / sign-in screen - first screen of the app
-
-export default function StarterScreen() {
+// Starter / sign-in screen - first screen of the app (merged with talinbranch)
+export default function Index() {
   const router = useRouter();
   return (
     <View style={styles.container}>

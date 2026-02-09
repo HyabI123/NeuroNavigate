@@ -23,7 +23,11 @@ export default function SelectProfileScreen() {
 
   const handleContinue = () => {
     if (!hasSelection) return;
-    router.push('/sensory_preferences' as import('expo-router').Href);
+    const firstSelectedId = Array.from(selectedIds)[0];
+    router.push({
+      pathname: '/sensory_preferences',
+      params: { id: firstSelectedId },
+    } as import('expo-router').Href);
   };
 
   return (

@@ -55,11 +55,15 @@ export default function RootLayout() {
             name="predictability_routine"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="communication_language"
+            options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
+          />
         </Stack>
         </SensoryProvider>
         </ProfilesProvider>
-        <StatusBar style="auto" />
       </LanguageProvider>
+      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }

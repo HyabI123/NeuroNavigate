@@ -4,3 +4,7 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# Env and secrets (do not commit real client IDs)
+.env
+.env.local
