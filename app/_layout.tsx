@@ -5,6 +5,7 @@ import 'react-native-reanimated';
 
 import { LanguageProvider } from '@/contexts/language-context';
 import { ProfilesProvider } from '@/contexts/profiles-context';
+import { SensoryProvider } from '@/contexts/sensory-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const unstable_settings = {
@@ -18,6 +19,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <LanguageProvider>
         <ProfilesProvider>
+        <SensoryProvider>
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -39,13 +41,26 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="sensory_preferences"
-              options={{ title: 'Sensory Preferences' }}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="add_custom_trigger"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="food_preferences"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="predictability_routine"
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="communication_language"
               options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
           </Stack>
+        </SensoryProvider>
         </ProfilesProvider>
       </LanguageProvider>
       <StatusBar style="auto" />
