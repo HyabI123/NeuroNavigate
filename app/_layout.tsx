@@ -63,6 +63,18 @@ export default function RootLayout() {
               name="profile_summary"
               options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
+            <Stack.Screen
+              name="mood_selection"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="cuisine_preferences"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="restaurants"
+              options={{ headerShown: false }}
+            />
           </Stack>
         </SensoryProvider>
         </ProfilesProvider>
