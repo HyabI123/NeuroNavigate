@@ -59,6 +59,10 @@ export default function RootLayout() {
               name="communication_language"
               options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
             />
+            <Stack.Screen
+              name="profile_summary"
+              options={{ title: 'Create Child Profile', headerBackTitle: 'Back' }}
+            />
           </Stack>
         </SensoryProvider>
         </ProfilesProvider>

@@ -67,7 +67,11 @@ export default function CommunicationLanguageScreen() {
         communicationNotes: communicationNotes.trim() || undefined,
       });
     }
-    router.push('/predictability_routine' as import('expo-router').Href);
+    router.push(
+      profileId
+        ? ({ pathname: '/predictability_routine', params: { id: profileId } } as import('expo-router').Href)
+        : ('/predictability_routine' as import('expo-router').Href)
+    );
   };
 
   if (profileId && !profile) {

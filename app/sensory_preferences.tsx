@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   type LayoutChangeEvent,
   Pressable,
@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 
+import type { SensitivityLevel } from '@/contexts/profiles-context';
+import { useProfiles } from '@/contexts/profiles-context';
 import { useSensory } from '@/contexts/sensory-context';
 
 const SENSORY_TRIGGERS = [
@@ -19,13 +21,20 @@ const SENSORY_TRIGGERS = [
   'Sudden noises',
 ] as const;
 
-type SensitivityLevel = 0 | 1 | 2; // Low, Med, High
+const LEVEL_LABELS: Record<SensitivityLevel, string> = {
+  0: 'Low',
+  1: 'Med',
+  2: 'High',
+};
 
 export default function SensoryPreferencesScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
+  const { profiles, updateProfileSensory } = useProfiles();
   const { customTriggerNames } = useSensory();
+  const profile = profileId ? profiles.find((p) => p.id === profileId) : null;
+
   const [noiseLevel, setNoiseLevel] = useState<SensitivityLevel>(1);
   const [lightingLevel, setLightingLevel] = useState<SensitivityLevel>(1);
   const [triggers, setTriggers] = useState<Record<string, boolean>>({
@@ -37,8 +46,40 @@ export default function SensoryPreferencesScreen() {
 
   const allTriggerKeys = [...SENSORY_TRIGGERS, ...customTriggerNames];
 
+  useEffect(() => {
+    if (profile?.sensory) {
+      const s = profile.sensory;
+      if (s.noiseLevel !== undefined) setNoiseLevel(s.noiseLevel);
+      if (s.lightingLevel !== undefined) setLightingLevel(s.lightingLevel);
+      if (s.triggerNames?.length) {
+        setTriggers((prev) => {
+          const next = { ...prev };
+          allTriggerKeys.forEach((k) => {
+            next[k] = s.triggerNames!.includes(k);
+          });
+          return next;
+        });
+      }
+    }
+  }, [profile?.id]);
+
   const toggleTrigger = (key: string) => {
     setTriggers((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleNext = () => {
+    if (profileId) {
+      updateProfileSensory(profileId, {
+        noiseLevel,
+        lightingLevel,
+        triggerNames: allTriggerKeys.filter((k) => triggers[k]),
+      });
+    }
+    router.push(
+      profileId
+        ? { pathname: '/food_preferences', params: { id: profileId } }
+        : '/food_preferences'
+    );
   };
 
   return (
@@ -84,13 +125,7 @@ export default function SensoryPreferencesScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
-          onPress={() => {
-            if (profileId) {
-              router.push({ pathname: '/food_preferences', params: { id: profileId } } as import('expo-router').Href);
-            } else {
-              router.push('/food_preferences' as import('expo-router').Href);
-            }
-          }}
+          onPress={handleNext}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </Pressable>
