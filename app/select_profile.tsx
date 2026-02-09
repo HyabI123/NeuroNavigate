@@ -84,6 +84,23 @@ export default function SelectProfileScreen() {
       </ScrollView>
       <Pressable
         style={({ pressed }) => [
+          styles.discoverButton,
+          pressed && styles.discoverButtonPressed,
+        ]}
+        onPress={() => {
+          const firstId = hasSelection ? Array.from(selectedIds)[0] : undefined;
+          router.push(
+            (firstId
+              ? { pathname: '/mood_selection', params: { id: firstId } }
+              : '/mood_selection') as import('expo-router').Href
+          );
+        }}
+      >
+        <Text style={styles.discoverButtonText}>Discover restaurants</Text>
+      </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [
           styles.continueButton,
           hasSelection && styles.continueButtonActive,
           pressed && hasSelection && styles.continueButtonPressed,
@@ -215,6 +232,21 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
   continueButtonTextActive: {
+    color: '#fff',
+  },
+  discoverButton: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  discoverButtonPressed: {
+    opacity: 0.9,
+  },
+  discoverButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
     color: '#fff',
   },
 });
