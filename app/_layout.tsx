@@ -75,6 +75,10 @@ export default function RootLayout() {
               name="restaurants"
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="restaurant_detail"
+              options={{ headerShown: false }}
+            />
           </Stack>
         </SensoryProvider>
         </ProfilesProvider>

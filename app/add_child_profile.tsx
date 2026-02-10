@@ -7,8 +7,6 @@ export default function AddChildProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.circlePlaceholder} />
-
       <Text style={styles.welcomeText}>Welcome to</Text>
       <Text style={styles.appName}>NeuroNavigate</Text>
       <Text style={styles.description}>
@@ -48,13 +46,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 48,
     alignItems: 'center',
-  },
-  circlePlaceholder: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#e5e7eb',
-    marginBottom: 32,
   },
   welcomeText: {
     fontSize: 20,

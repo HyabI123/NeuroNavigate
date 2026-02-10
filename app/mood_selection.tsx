@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type MoodOption =
   | 'adventurous'
@@ -50,6 +51,7 @@ const MOOD_OPTIONS: {
 
 export default function MoodSelectionScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const profileId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const [selectedMood, setSelectedMood] = useState<MoodOption | null>('adventurous');
@@ -73,14 +75,13 @@ export default function MoodSelectionScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: 12 + insets.top }]}>
         <Pressable
           style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
           onPress={() => router.back()}
           hitSlop={12}
         >
-          <Ionicons name="chevron-back" size={22} color="#fff" />
-          <Text style={styles.backButtonText}>Back</Text>
+          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
         </Pressable>
         <Text style={styles.headerTitle}>Mood Selection</Text>
       </View>
@@ -139,33 +140,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    paddingTop: 48,
     paddingBottom: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#f5f5f5',
     position: 'relative',
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: 4,
+    marginRight: 4,
     zIndex: 1,
   },
   backButtonPressed: {
     opacity: 0.6,
   },
-  backButtonText: {
-    fontSize: 17,
-    color: '#fff',
-    marginLeft: 2,
-  },
   headerTitle: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
     fontSize: 18,
     fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
+    color: '#1a1a1a',
   },
   scroll: {
     flex: 1,

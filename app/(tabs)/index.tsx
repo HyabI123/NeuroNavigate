@@ -113,7 +113,12 @@ export default function HomeScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
-          onPress={() => {}}
+          onPress={() => {
+            router.push({
+              pathname: '/mood_selection',
+              params: currentProfileId ? { id: currentProfileId } : {},
+            } as import('expo-router').Href);
+          }}
         >
           <Ionicons name="restaurant" size={22} color="#fff" />
           <Text style={styles.primaryButtonText}>Discover Restaurants</Text>

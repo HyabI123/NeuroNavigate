@@ -14,22 +14,9 @@ export default function Index() {
             <Text style={styles.logoBottom}>avigate</Text>
           </View>
         </View>
-        <Text style={styles.poweredBy}>
-          Powered by{' '}
-          <Text style={styles.googleBlue}>G</Text>
-          <Text style={styles.googleRed}>o</Text>
-          <Text style={styles.googleYellow}>o</Text>
-          <Text style={styles.googleBlue}>g</Text>
-          <Text style={styles.googleGreen}>l</Text>
-          <Text style={styles.googleRed}>e</Text>
-        </Text>
       </View>
 
       <View style={styles.bottomSection}>
-        <Pressable style={styles.googleButton}>
-          <Text style={styles.googleG}>G</Text>
-          <Text style={styles.googleButtonText}>Sign in with Google</Text>
-        </Pressable>
         <Pressable
           style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}
           onPress={() => router.push('/language-select')}
@@ -92,37 +79,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 56,
   },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#dadce0',
-    minWidth: 260,
-    gap: 12,
-  },
-  googleG: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#4285F4',
-  },
-  googleButtonText: {
-    fontSize: 16,
-    color: '#9aa0a6',
-    fontWeight: '500',
-  },
-  poweredBy: {
-    marginTop: 16,
-    fontSize: 14,
-    color: 'black',
-    textAlign: 'center',
-    minWidth: 220,
-    alignSelf: 'center',
-  },
   nextButton: {
     marginTop: 16,
     backgroundColor: '#165dfc',
@@ -147,8 +103,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 32,
   },
-  googleBlue: { color: '#4285F4' },
-  googleRed: { color: '#EA4335' },
-  googleYellow: { color: '#FBBC05' },
-  googleGreen: { color: '#34A853' },
 });

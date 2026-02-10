@@ -6,6 +6,7 @@
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
 export type GeminiModel =
+  | 'gemini-2.5-flash'
   | 'gemini-2.0-flash'
   | 'gemini-1.5-flash'
   | 'gemini-1.5-pro'
@@ -41,7 +42,7 @@ export async function generateContent(
   options: GenerateContentOptions = {}
 ): Promise<GenerateContentResult> {
   const apiKey = getApiKey();
-  const model = options.model ?? 'gemini-2.0-flash';
+  const model = options.model ?? 'gemini-2.5-flash';
   const url = `${GEMINI_BASE}/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const body: Record<string, unknown> = {
@@ -100,7 +101,7 @@ export async function checkGeminiApi(): Promise<ApiCheckResult> {
   apiCheckPromise = (async () => {
     try {
       await generateContent('Reply with exactly: OK', {
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash',
         maxOutputTokens: 10,
       });
       return { ok: true };
